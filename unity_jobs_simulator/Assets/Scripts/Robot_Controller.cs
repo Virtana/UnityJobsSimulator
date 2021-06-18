@@ -132,7 +132,6 @@ public class Robot_Controller : MonoBehaviour
             ArticulationDrive drive = joint.xDrive;
             drive.target = angles[i];
             joint.xDrive = drive;
-            //updateMaxForce(joint);
             Vector3 worldAngVel = joint.angularVelocity;
             Vector3 angVel = transform.InverseTransformVector(worldAngVel);
             if(angVel.magnitude > maxVel)
