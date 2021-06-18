@@ -402,29 +402,45 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8482453062095840, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 280417859985793790, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.7778
+      objectReference: {fileID: 0}
     - target: {fileID: 280417859985793790, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
       value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 280417859985793790, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 1000000
       objectReference: {fileID: 0}
     - target: {fileID: 280417859985793790, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2101550497905898873, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 1.293
+      objectReference: {fileID: 0}
+    - target: {fileID: 2101550497905898873, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
-      value: 2500
+      value: 25000
       objectReference: {fileID: 0}
     - target: {fileID: 2101550497905898873, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 1e+10
       objectReference: {fileID: 0}
     - target: {fileID: 2101550497905898873, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2818669555538071022, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.196
       objectReference: {fileID: 0}
     - target: {fileID: 2818669555538071022, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
@@ -432,11 +448,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2818669555538071022, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 1e+10
       objectReference: {fileID: 0}
     - target: {fileID: 2818669555538071022, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4075026708496277126, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.387
       objectReference: {fileID: 0}
     - target: {fileID: 4075026708496277126, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
@@ -444,11 +464,75 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4075026708496277126, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 1000000
       objectReference: {fileID: 0}
     - target: {fileID: 4075026708496277126, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: angleSensitivity
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: targetPos.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[0]
+      value: 2500
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[1]
+      value: 25000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[2]
+      value: 3000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[3]
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[4]
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: damping.Array.data[5]
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[0]
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[1]
+      value: 3.4028235e+38
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[2]
+      value: 1000000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[3]
+      value: 1000000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[4]
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: stiffness.Array.data[5]
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 5037355380368162666, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: speed
@@ -594,17 +678,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6490974718276087357, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 7866423017917604978, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8433761093833727244, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.0202
+      objectReference: {fileID: 0}
+    - target: {fileID: 8433761093833727244, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
-      value: 5000
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 8433761093833727244, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 8433761093833727244, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
@@ -622,13 +714,21 @@ PrefabInstance:
       propertyPath: m_ParentAnchorRotation.w
       value: 1.0000002
       objectReference: {fileID: 0}
+    - target: {fileID: 8747749000177706877, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9031514810599678106, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: m_Mass
+      value: 0.196
+      objectReference: {fileID: 0}
     - target: {fileID: 9031514810599678106, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.damping
       value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 9031514810599678106, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.stiffness
-      value: 10000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 9031514810599678106, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: m_XDrive.forceLimit
@@ -636,50 +736,5 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8911471449178277481, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+    - {fileID: 5037355380368162666, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
---- !u!171741748 &1965494056 stripped
-ArticulationBody:
-  m_CorrespondingSourceObject: {fileID: 8747749000177706877, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
-  m_PrefabInstance: {fileID: 1965494055}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1965494057 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4780867577410830160, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
-  m_PrefabInstance: {fileID: 1965494055}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1965494058
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965494057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a08930acb895984ea9daaebaf590e4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  robotBase: {fileID: 1965494056}
-  maxVel: 10
-  moveRobotTo:
-  - 100
-  - -60
-  - 120
-  - 180
-  - -90
-  - 45
-  setAllJointDriveValues: 1
-  stiffness:
-  - 10000
-  - 10000
-  - 10000
-  - 10000
-  - 5000
-  - 5000
-  damping:
-  - 2000
-  - 2500
-  - 3000
-  - 1000
-  - 1000
-  - 1000
