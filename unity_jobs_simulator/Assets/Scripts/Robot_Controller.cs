@@ -5,75 +5,77 @@ using UnityEngine;
 
 public class Robot_Controller : MonoBehaviour
 {
-    private ArticulationBody[] _Arms; // This array tracks all the articulation bodies in the robot
-    private List<ArticulationBody> _Joints = new List<ArticulationBody>(); // This list tracks all the articulation bodies with moveable joints in the robot
-    public ArticulationBody robotBase; // This public variable is assigned to the base Articulation body in the robot
-    public float maxVelocity = 90f; // This is the velocity which the robot joint cannot exceed in deg/s 
-    private float _maxVel; // This is a conversion of maxVelocity to rad/s
-    public List<float> targetPos; // This is the input variable that we tell the robot to move to (upon pressing the key 'M')
-    private List<float> _currentDrivePos; // This is a track of the robot's Drive target
-    private List<float> _enroute; // This is a track of the final target to which the robot is trying to get to i.e. where the Drive will eventually reach
+    private ArticulationBody[] _links; // This array tracks all the articulation bodies in the robot
+    private List<ArticulationBody> _joints = new List<ArticulationBody>(); // This list tracks all the articulation bodies with moveable joints in the robot
+    public ArticulationBody RobotBase; // This public variable is assigned to the base Articulation body in the robot
+    public float MaxVelocityDeg = 90f; // This is the velocity which the robot joint cannot exceed in deg/s 
+    private float _maxVelRad; // This is a conversion of MaxVelocityDeg to rad/s
+    public float AngleSensitivity; // This is the error which the angles can be, measured in deg (Should be 0.088) todo tune masses of each articulation body
+    public List<float> TargetJointAngles; // This is the input variable that we tell the robot to move to
+    public List<float> CurrentJointAngles; // This is a track of the robot's Joint Angles in Degrees
+    private List<float> _currentDriveTarget; // This is a track of the robot's Drive target
+    public List<float> _enroute; // This is a track of the final target to which the robot is trying to get to i.e. where the Drive will eventually reach
     private List<float> _incAngles; // This is a list of the incremental angles with which the joints will increase by for each iteration
     private List<float> _nextAngles; // This is the next angle, within the increments, that the robot Drive will go to i.e. the sum of the increments
     private List<int> _increments; // This is a list of integers of the number of increments that each joint must move through
-    private List<float> _zeroList; // This is a simple reference list of all zeroes; its size is _Joints.Count
-    public float angleSensitivity; // This is the error which the angles can be, measured in deg (Should be 0.088) todo tune masses of each articulation body
-    public bool setAllJointDriveValues = true; // This will override the preset values of the stiffness and damping for the joints and set it to the inputs
+    private List<float> _zeroList; // This is a simple reference list of all zeroes; its size is _joints.Count
+    public bool CheckAngleError; // This is a variable to toggle that would post the angles which are exceeding the angle sensitivity
+    public bool SetAllJointDriveValues = true; // This will override the preset values of the stiffness and damping for the joints and set it to the inputs
     public List<float> stiffness; // This is the input for the stiffnesses for each joint to override the preset
     public List<float> damping; // This is the input for the dampings for each joint to override the preset
-    private float _pi = Mathf.PI; // Easier vaiable reference for the value of pi
-    private DateTime _t1; // The initial time for any movement
-    private DateTime _t2; // The final time for when a movement is complete
-
-    // temp variables for debugging below
-    public List<float> currentPos;
     
     void Start()
     {
-        initializeJoints(); // This function initializes the _Arms/_Joints array/list for the robot
+        InitializeJoints(); // This function initializes the _links/_joints array/list for the robot
         
         _zeroList = new List<float>(); // An easy reference list of zeroes
-        for(int i=0 ; i < _Joints.Count ; i++)
+        for(int i=0 ; i < _joints.Count ; i++)
         {
             _zeroList.Add(0);
         }
 
-        targetPos = new List<float>(_zeroList); // Simple initial position
-        _currentDrivePos = new List<float>(_zeroList); // This is the current position at the Start
+        if(TargetJointAngles.Count != _joints.Count) // If an initial position hasn't been set, we set the joint angls to all zeroes
+        {
+            TargetJointAngles = new List<float>(_zeroList); // Simple initial position
+        }
+        _currentDriveTarget = new List<float>(_zeroList); // This is the current position at the Start
         _incAngles = new List<float>(_zeroList); // The incremental angles are all zero
         _enroute = new List<float>(_zeroList); // We aren't enroute anywhere
-        stiffness = new List<float>() {10000f, 100000000000000000000000000000000000000f, 1000000f, 1000000f, 5000f, 5000f};
-        damping = new List<float>() {2000f, 25000f, 3000f, 1000f, 1000f, 1000f};
 
-        _maxVel = maxVelocity / 180 * _pi; // This converts our degree/second velocity to radians/second
+        _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This converts our degree/second velocity to radians/second
+
     }
 
-    public void initializeJoints()
+    public void InitializeJoints()
     {
-        _Arms = GetComponentsInChildren<ArticulationBody>(); // This takes all articulation bodies connected to the base and orders it from the top of the tree
-        Debug.Log("We just found " + _Arms.Length + " ArticulationBodies in this scene");
-        foreach(ArticulationBody meow in _Arms) // Now we run through each articulation body and add it to the List _Joints for those that aren't fixed
+        _links = RobotBase.GetComponentsInChildren<ArticulationBody>(); // This takes all articulation bodies connected to the base and orders it from the top of the tree
+        Debug.Log("We just found " + _links.Length + " ArticulationBodies in this scene");
+        foreach(ArticulationBody meow in _links) // Now we run through each articulation body and add it to the List _joints for those that aren't fixed
         {
-            if(meow.jointType == ArticulationJointType.PrismaticJoint || meow.jointType == ArticulationJointType.RevoluteJoint || meow.jointType == ArticulationJointType.SphericalJoint)
+            if(meow.jointType == ArticulationJointType.RevoluteJoint)
             {
-                _Joints.Add(meow); // This is where we add the joint 'meow' since we know it isn't a fixed joint and can move 
+                _joints.Add(meow); // This is where we add the joint 'meow' since we know it isn't a fixed joint and can move 
+            }
+            else if(meow.jointType == ArticulationJointType.PrismaticJoint || meow.jointType == ArticulationJointType.SphericalJoint)
+            {
+                Debug.LogError("All the joints must be of type Fixed or Revolute.", meow);
             }
         }
-        Debug.Log("We just added " + _Joints.Count + " ArticulationBodies to the joints array");
+        Debug.Log("We just added " + _joints.Count + " ArticulationBodies to the joints array");
 
-        if(stiffness.Count != _Joints.Count || damping.Count != _Joints.Count) // Error message if we don't have correct number of inputs
+        if(stiffness.Count != _joints.Count || damping.Count != _joints.Count) // Error message if we don't have correct number of inputs
         {
-            Debug.Log("Expected " + _Joints.Count + " inputs and Got " + stiffness.Count + " and " + damping.Count + " for the stiffness and damping lists.");
+            Debug.LogError("Expected " + _joints.Count + " inputs and Got " + stiffness.Count + " and " + damping.Count + " for the stiffness and damping lists.");
         }
 
-        if(setAllJointDriveValues) // We set the Stiffness and Damping values to override the preset if told to do so
+        if(SetAllJointDriveValues) // We set the Stiffness and Damping values to override the preset if told to do so
         {
-            for(int i=0; i < _Joints.Count ; i++) // Runs through all the joints to set each value to the xDrive for each joint
+            for(int i=0; i < _joints.Count ; i++) // Runs through all the joints to set each value to the xDrive for each joint
             {
-                ArticulationDrive drive = _Joints[i].xDrive;
+                ArticulationDrive drive = _joints[i].xDrive;
                 drive.stiffness = stiffness[i];
                 drive.damping = damping[i];
-                _Joints[i].xDrive = drive;
+                _joints[i].xDrive = drive;
             }
         }
     }
@@ -82,110 +84,108 @@ public class Robot_Controller : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
         {
-            targetPos = new List<float>() {0, 0, 0, 0, 0, 0};
+            TargetJointAngles = new List<float>() {0, 0, 0, 0, 0, 0};
         }
         if(Input.GetKeyDown(KeyCode.A))
         {
-            targetPos = new List<float>(){100, -60, 120, 180, -90, 45};
+            TargetJointAngles = new List<float>(){100, -60, 120, 180, -90, 45};
         }
         if(Input.GetKeyDown(KeyCode.S))
         {
-            targetPos = new List<float>(){-45, -30, 15, 0, 90, 90};
+            TargetJointAngles = new List<float>(){-45, -30, 15, 0, 90, 90};
         }
         if(Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.Alpha1))
         {
-            targetPos = new List<float>() {90, 0, 0, 0, 0, 0};
+            TargetJointAngles = new List<float>() {90, 0, 0, 0, 0, 0};
         }
         if(Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2))
         {
-            targetPos = new List<float>() {0, -90, 0, 0, 0, 0};
+            TargetJointAngles = new List<float>() {0, -90, 0, 0, 0, 0};
         }
         if(Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))
         {
-            targetPos = new List<float>() {0, 0, -90, 0, 0, 0};
+            TargetJointAngles = new List<float>() {0, 0, -90, 0, 0, 0};
         }
         if(Input.GetKeyDown(KeyCode.Keypad4) || Input.GetKeyDown(KeyCode.Alpha4))
         {
-            targetPos = new List<float>() {0, 0, 0, 90, 0, 0};
+            TargetJointAngles = new List<float>() {0, 0, 0, 90, 0, 0};
         }
         if(Input.GetKeyDown(KeyCode.Keypad5) || Input.GetKeyDown(KeyCode.Alpha5))
         {
-            targetPos = new List<float>() {0, 0, 0, 0, -90, 0};
+            TargetJointAngles = new List<float>() {0, 0, 0, 0, -90, 0};
         }
         if(Input.GetKeyDown(KeyCode.Keypad6) || Input.GetKeyDown(KeyCode.Alpha6))
         {
-            targetPos = new List<float>() {0, 0, 0, 0, 0, 90};
+            TargetJointAngles = new List<float>() {0, 0, 0, 0, 0, 90};
         }
     }
 
     void FixedUpdate()
     {
-        updateCurrentDrivePos(); // We need to update the current position of the Robot to ensure we know exactly where it is
+        UpdateCurrentDrivePos(); // We need to update the current position of the Robot to ensure we know exactly where it is
         
-        if(samePos(_currentDrivePos, targetPos)) // If we are at the preset target, FixedUpdate shouldn't run so we return nothing
+        if(SamePos(CurrentJointAngles, TargetJointAngles)) // If we are at the preset target, FixedUpdate shouldn't run so we return nothing
         {
-            // checkAngleErrors();
+            if(CheckAngleError)
+            {
+                CheckAngleErrors();
+            }
             return;
         }
 
-        if(!(samePos(_currentDrivePos, _enroute))) // If the route has changed, we need to restart the motion
+        if(!(SamePos(_currentDriveTarget, _enroute))) // If the route has changed, we need to restart the motion
         {
-            _enroute = new List<float>(targetPos);
+            _enroute = new List<float>(TargetJointAngles);
             _incAngles = new List<float>(_zeroList);
         }
 
-        if(samePos(_incAngles, _zeroList)) // If we don't have increments for the angles, then we aren't going anywhere and need to initialize these increments
+        if(SamePos(_incAngles, _zeroList)) // If we don't have increments for the angles, then we aren't going anywhere and need to initialize these increments
         {
-            getIncrements(); // This calculates the values for increments given the target angles, the current positions, and the maximum velocity
-            setIncAngles(); // This calculates the incremental angles given the increments and the target angles
-            _enroute = new List<float>(targetPos); // We set our enroute position as this is where our robot movement will be moving to
-            _nextAngles = addLists(_currentDrivePos, _incAngles); // This increments the angles by one increment
-            _t1 = DateTime.Now; // Time.realtimeSinceStartup; // We record the start time for this motion
+            _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This updates the value of _maxVelRad if the input MaxVelocityDeg is changed during motion
+            GetIncrements(); // This calculates the values for increments given the target angles, the current positions, and the maximum velocity
+            SetIncAngles(); // This calculates the incremental angles given the increments and the target angles
+            _enroute = new List<float>(TargetJointAngles); // We set our enroute position as this is where our robot movement will be moving to
+            _nextAngles = AddLists(_currentDriveTarget, _incAngles); // This increments the angles by one increment
         }
 
-        if(samePos(_nextAngles, targetPos)) // If the next Angle is the final target position, then this is the final increment
+        if(SamePos(_nextAngles, TargetJointAngles)) // If the next Angle is the final target position, then this is the final increment
         {
-            adjustRobotAngles(targetPos, 0f); // We set the final angle to the final target, and we set the joint the velocities to zero
+            AdjustRobotAngles(TargetJointAngles, 0f); // We set the final angle to the final target, and we set the joint the velocities to zero
             _incAngles = new List<float>(_zeroList); // We've reached the final location so we do not want to increment the angles anymore so we set this to zero
-            _t2 = DateTime.Now; // Time.realtimeSinceStartup; // We record the final time 
-            TimeSpan timeDiff = _t2.Subtract(_t1);
-            Debug.Log("Time took for that motion was: " + timeDiff.ToString()); // Log the time taken
-            return;
         }
         else // Otherwise, the robot is incrementing the angles to the next incremental position
         {
-            adjustRobotAngles(_nextAngles, _maxVel); // We adjust the robot to the next position
-            _nextAngles = addLists(_nextAngles, _incAngles); // We increment the nextAngle list up by the incremental angles
+            AdjustRobotAngles(_nextAngles, _maxVelRad); // We adjust the robot to the next position
+            _nextAngles = AddLists(_nextAngles, _incAngles); // We increment the nextAngle list up by the incremental angles
         }
     }
 
-    public void updateCurrentDrivePos()
+    public void UpdateCurrentDrivePos()
     {
-        _currentDrivePos = new List<float>(); // Creates a new list to store the current Drive target positions in
-        for(int i = 0; i < _Joints.Count ; i++) // Runs through each Joint to check its position
+        _currentDriveTarget = new List<float>(); // Creates a new list to store the current Drive target positions in
+        for(int i = 0; i < _joints.Count ; i++) // Runs through each Joint to check its position
         {
-            ArticulationBody joint = _Joints[i];
+            ArticulationBody joint = _joints[i];
             float temp = joint.xDrive.target;
-            _currentDrivePos.Add(temp);
+            _currentDriveTarget.Add(temp);
         }
 
-        //This is temporary for debugging reasons
-        currentPos = new List<float>(); 
-        for(int i = 0; i < _Joints.Count ; i++) 
+        CurrentJointAngles = new List<float>(); 
+        for(int i = 0; i < _joints.Count ; i++) 
         {
-            ArticulationBody joint = _Joints[i];
-            float tempp = joint.jointPosition[0];
-            currentPos.Add(tempp * 180f / _pi);
+            ArticulationBody joint = _joints[i];
+            float temp = joint.jointPosition[0];
+            CurrentJointAngles.Add(temp * Mathf.Rad2Deg);
         }
     }
 
-    public void getIncrements()
+    public void GetIncrements()
     {
         _increments = new List<int>();
-        for(int i=0 ; i < targetPos.Count ; i++)
+        for(int i=0 ; i < TargetJointAngles.Count ; i++)
         {
-            float diff = Math.Abs(targetPos[i] - _currentDrivePos[i]); // We get the magnitude of the angle needed to move
-            float t = diff/_maxVel; // The time taken is the angle divided by the angular velocity
+            float diff = Math.Abs(TargetJointAngles[i] - _currentDriveTarget[i]); // We get the magnitude of the angle needed to move
+            float t = diff/_maxVelRad; // The time taken is the angle divided by the angular velocity
             int newT = (int)t; // Each increment is dependent on the time step
             if(newT == 0) // If the time step is zero, this means that there is no split for the angle so we simlpy have an increment of 1
             {
@@ -198,20 +198,20 @@ public class Robot_Controller : MonoBehaviour
         }
     }
 
-    public void setIncAngles()
+    public void SetIncAngles()
     {
         _incAngles = new List<float>();
         for(int i=0 ; i<_increments.Count ; i++) // Each incremental angle is the total angle needed to travel divided by the number of increments
         {
-            _incAngles.Add((targetPos[i] - _currentDrivePos[i])/_increments[i]);
+            _incAngles.Add((TargetJointAngles[i] - _currentDriveTarget[i])/_increments[i]);
         }
     }
 
-    public List<float> addLists(List<float> list1, List<float> list2) // This is a simple list element-wise adder
+    public List<float> AddLists(List<float> list1, List<float> list2) // This is a simple list element-wise adder
     {
         if(list1.Count != list2.Count)
         {
-            Debug.Log("You cannot add a list of size " + list1.Count + " to a list of size " + list2.Count);
+            Debug.LogError("You cannot add a list of size " + list1.Count + " to a list of size " + list2.Count);
         }
         List<float> temp = new List<float>();
         for(int i=0 ; i < list1.Count ; i++)
@@ -222,7 +222,7 @@ public class Robot_Controller : MonoBehaviour
         return temp;
     }
 
-    public bool samePos(List<float> pos1, List<float> pos2) // This function runs through each element in the lists and check to see if they're within range of each other
+    public bool SamePos(List<float> pos1, List<float> pos2) // This function runs through each element in the lists and check to see if they're within range of each other
     {
         if(pos1.Count != pos2.Count)
         {
@@ -230,7 +230,7 @@ public class Robot_Controller : MonoBehaviour
         }
         for(int i = 0; i < pos1.Count; i++)
         {
-            if(Math.Abs(pos1[i] - pos2[i]) > angleSensitivity) // if any angle isn't within 'angleSensitivity' range of each other, then it is false
+            if(Math.Abs(pos1[i] - pos2[i]) > AngleSensitivity) // if any angle isn't within 'AngleSensitivity' range of each other, then it is false
             {
                 return false;
             }
@@ -238,17 +238,17 @@ public class Robot_Controller : MonoBehaviour
         return true; // After checking all, if none returns false, then we are within range and we return true
     }
 
-    public void adjustRobotAngles(List<float> angles, float vel) // This simply adjusts the robot angles to the values in the angles input list and sets the velocity to vel
+    public void AdjustRobotAngles(List<float> angles, float vel) // This simply adjusts the robot angles to the values in the angles input list and sets the velocity to vel
     {
-        if(angles.Count != _Joints.Count)
+        if(angles.Count != _joints.Count)
         {
-            Debug.Log("Incorrect number of input angles. Expected " + _Joints.Count + " but received " + angles.Count + ".");
+            Debug.LogError("Incorrect number of input angles. Expected " + _joints.Count + " but received " + angles.Count + ".");
             return;
         }
 
         for(int i = 0; i < angles.Count; i++) // We run through each joint and set the Drive targets and velocities
         {
-            ArticulationBody joint = _Joints[i];
+            ArticulationBody joint = _joints[i];
             ArticulationDrive drive = joint.xDrive;
             float angle = angles[i];
             drive.target = angle;
@@ -257,16 +257,16 @@ public class Robot_Controller : MonoBehaviour
         }
     }
 
-    public void checkAngleErrors()
+    public void CheckAngleErrors()
     {
-        for(int i = 0; i < _Joints.Count ; i++) // Runs through each Joint to check its position
+        for(int i = 0; i < _joints.Count ; i++) // Runs through each Joint to check its position
         {
-            ArticulationBody joint = _Joints[i];
+            ArticulationBody joint = _joints[i];
             float radAng = joint.jointPosition[0]; // This gives us the angle position in radians 
-            float ang = radAng / _pi * 180f; // We convert back to degrees to check since sensitivity is given in degrees
-            if(Math.Abs(ang - _currentDrivePos[i]) > angleSensitivity)
+            float ang = radAng * Mathf.Rad2Deg; // We convert back to degrees to check since sensitivity is given in degrees
+            if(Math.Abs(ang - _currentDriveTarget[i]) > AngleSensitivity)
             {
-                Debug.Log("Joint " + joint.ToString() + " exceeds the Angle error of " + angleSensitivity + ". It is at " + ang + " and should be at " + _currentDrivePos[i] + ".");
+                Debug.Log("Joint " + joint.ToString() + " exceeds the Angle error of " + AngleSensitivity + ". It is at " + ang + " and should be at " + _currentDriveTarget[i] + ".");
             }
         }
     }
