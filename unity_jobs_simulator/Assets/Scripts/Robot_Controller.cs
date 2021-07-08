@@ -22,9 +22,6 @@ public class Robot_Controller : MonoBehaviour
     public List<float> stiffness; // This is the input for the stiffnesses for each joint to override the preset
     public List<float> damping; // This is the input for the dampings for each joint to override the preset
     private float _pi = Mathf.PI; // Easier vaiable reference for the value of pi
-    private TimeSpan _t1; // The initial time for any movement
-    private TimeSpan _t2; // The final time for when a movement is complete
-    private DateTime _startTime;
     // Matrices for each of the Transposes:
     public Matrix4x4 Real_T_Unity;
     public Matrix4x4 UnityRobotBase_T_UnityRobotTCP;
@@ -35,7 +32,6 @@ public class Robot_Controller : MonoBehaviour
     
     void Start()
     {
-        _startTime = DateTime.Now;
         initializeJoints(); // This function initializes the _Arms/_Joints array/list for the robot
         
         _zeroList = new List<float>(); // An easy reference list of zeroes
@@ -55,7 +51,7 @@ public class Robot_Controller : MonoBehaviour
 
         Real_T_Unity = Matrix4x4.identity; // Creating the Matrix
         Real_T_Unity[0, 0] = -1; // The Matrix represents a reflection in y-z plane... doesn't need an update
-        updateRealRobotBase_T_RealRobotTCP(); // This updates both of the other Matrices
+        CalculateRealRobotBase_T_RealRobotTCP(); // This updates both of the other Matrices
     }
 
     public void initializeJoints()
@@ -126,11 +122,6 @@ public class Robot_Controller : MonoBehaviour
         {
             targetPos = new List<float>() {0, 0, 0, 0, 0, 90};
         }
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            Vector3 pos = getTCPTranspose();
-            Debug.Log("The robot tool is at position " + pos.ToString());
-        }
     }
 
     void FixedUpdate()
@@ -140,7 +131,7 @@ public class Robot_Controller : MonoBehaviour
         if(samePos(_currentDrivePos, targetPos)) // If we are at the preset target, FixedUpdate shouldn't run so we return nothing
         {
             // checkAngleErrors();
-            updateRealRobotBase_T_RealRobotTCP();
+            CalculateRealRobotBase_T_RealRobotTCP();
             return;
         }
 
@@ -156,16 +147,12 @@ public class Robot_Controller : MonoBehaviour
             setIncAngles(); // This calculates the incremental angles given the increments and the target angles
             _enroute = new List<float>(targetPos); // We set our enroute position as this is where our robot movement will be moving to
             _nextAngles = addLists(_currentDrivePos, _incAngles); // This increments the angles by one increment
-            _t1 = _startTime.Subtract(DateTime.Now); // Time.realtimeSinceStartup; // We record the start time for this motion
         }
 
         if(samePos(_nextAngles, targetPos)) // If the next Angle is the final target position, then this is the final increment
         {
             adjustRobotAngles(targetPos, 0f); // We set the final angle to the final target, and we set the joint the velocities to zero
             _incAngles = new List<float>(_zeroList); // We've reached the final location so we do not want to increment the angles anymore so we set this to zero
-            _t2 = _startTime.Subtract(DateTime.Now); // Time.realtimeSinceStartup; // We record the final time 
-            TimeSpan timeDiff = _t2.Subtract(_t1);
-            Debug.Log("Time took for that motion was: " + timeDiff.ToString()); // Log the time taken
         }
         else // Otherwise, the robot is incrementing the angles to the next incremental position
         {
@@ -286,26 +273,36 @@ public class Robot_Controller : MonoBehaviour
         }
     }
 
-    public Vector3 getTCPTranspose()
+    public List<float> getTCPTranspose()
     {
         int final = _Arms.Length - 1;
         ArticulationBody last = _Arms[final];
-        Vector3 worldTranspose = last.transform.position;
-        // Vector3 worldTranspose = Transform.TransformVector(localTranspose);
+        Debug.Log(last);
+        Vector3 worldPosition = last.transform.position;
+        Vector3 worldRotation = last.transform.eulerAngles;
+        List<float> worldTranspose = new List<float>(6){0, 0, 0, 0, 0 ,0};
+        for(int i = 0; i < 3; i++)
+        {
+            worldTranspose[i] = worldPosition[i];
+            worldTranspose[i+3] = worldRotation[i];
+        }
         return worldTranspose;
     }
 
-    public void updateUnityRobotBase_T_UnityRobotTCP()
+    public void CalculateUnityRobotBase_T_UnityRobotTCP()
     {
         int final = _Arms.Length - 1;
         ArticulationBody last = _Arms[final]; // Pull the tool which is the final Articulation Body in _Arms
-        UnityRobotBase_T_UnityRobotTCP = last.transform.localToWorldMatrix; // Unity has built in function for the Matrix
+        Transform robot = last.transform; // This is the transform of the tool
+        Vector3 translation = robotBase.transform.position; // This is the position of the robotBase
+        robot.position = robot.position - translation; // This shifts the transform so the base is at world origin
+        UnityRobotBase_T_UnityRobotTCP = last.transform.localToWorldMatrix; // This Matrix is relative to world origin
     }
 
-    public void updateRealRobotBase_T_RealRobotTCP()
+    public void CalculateRealRobotBase_T_RealRobotTCP()
     {
-        updateUnityRobotBase_T_UnityRobotTCP(); // We ensure to update the Unity Robot transform
-        Matrix4x4 Unity_T_Real = Real_T_Unity.inverse; // Get the inverse 
+        CalculateUnityRobotBase_T_UnityRobotTCP(); 
+        Matrix4x4 Unity_T_Real = Real_T_Unity.inverse;
         RealRobotBase_T_RealRobotTCP = Real_T_Unity * UnityRobotBase_T_UnityRobotTCP * Unity_T_Real; // Simple Transform relationship
     }
 }
