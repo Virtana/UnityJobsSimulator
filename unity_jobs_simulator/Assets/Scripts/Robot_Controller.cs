@@ -16,7 +16,7 @@ public class Robot_Controller : MonoBehaviour
     private List<float> _enroute; // This is a track of the final target to which the robot is trying to get to i.e. where the Drive will eventually reach
     private List<float> _incAngles; // This is a list of the incremental angles with which the joints will increase by for each iteration
     private List<float> _nextAngles; // This is the next angle, within the increments, that the robot Drive will go to i.e. the sum of the increments
-    private List<int> _increments; // This is a list of integers of the number of increments that each joint must move through
+    private List<float> _increments; // This is a list of integers of the number of increments that each joint must move through
     private List<float> _zeroList; // This is a simple reference list of all zeroes; its size is _joints.Count
     public bool CheckAngleError; // This is a variable to toggle that would post the angles which are exceeding the angle sensitivity
     public bool SetAllJointDriveValues = true; // This will override the preset values of the stiffness and damping for the joints and set it to the inputs
@@ -39,6 +39,8 @@ public class Robot_Controller : MonoBehaviour
         }
         _currentDriveTarget = new List<float>(_zeroList); // This is the current position at the Start
         _incAngles = new List<float>(_zeroList); // The incremental angles are all zero
+        _nextAngles = new List<float>(_zeroList);
+        _increments = new List<float>(_zeroList);
         _enroute = new List<float>(_zeroList); // We aren't enroute anywhere
         _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This converts our degree/second velocity to radians/second
     }
