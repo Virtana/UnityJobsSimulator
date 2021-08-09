@@ -492,7 +492,19 @@ PrefabInstance:
       value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: damping.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: AngleSensitivityDeg
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.size
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
@@ -502,6 +514,30 @@ PrefabInstance:
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: targetPos.Array.size
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[0]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[1]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[2]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[3]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[4]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Damping.Array.data[5]
+      value: 1e+10
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: damping.Array.data[0]
@@ -526,6 +562,30 @@ PrefabInstance:
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: damping.Array.data[5]
       value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[0]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[1]
+      value: 1e+20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[2]
+      value: 1e+20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[3]
+      value: 1e+20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[4]
+      value: 1e+10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: Stiffness.Array.data[5]
+      value: 1e+10
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: stiffness.Array.data[0]

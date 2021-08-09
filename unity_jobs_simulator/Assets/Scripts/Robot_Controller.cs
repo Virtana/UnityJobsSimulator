@@ -13,15 +13,15 @@ public class Robot_Controller : MonoBehaviour
     public List<float> TargetJointAngles; // This is the input variable that we tell the robot to move to
     public List<float> CurrentJointAngles; // This is a track of the robot's Joint Angles in Degrees
     private List<float> _currentDriveTarget; // This is a track of the robot's Drive target
-    private List<float> _enroute; // This is a track of the final target to which the robot is trying to get to i.e. where the Drive will eventually reach
+    private List<float> _currentEndGoal; // This is a track of the final target to which the robot is trying to get to i.e. where the Drive will eventually reach
     private List<float> _incAngles; // This is a list of the incremental angles with which the joints will increase by for each iteration
     private List<float> _nextAngles; // This is the next angle, within the increments, that the robot Drive will go to i.e. the sum of the increments
     private List<float> _increments; // This is a list of integers of the number of increments that each joint must move through
     private List<float> _zeroList; // This is a simple reference list of all zeroes; its size is _joints.Count
     public bool CheckAngleError; // This is a variable to toggle that would post the angles which are exceeding the angle sensitivity
     public bool SetAllJointDriveValues = true; // This will override the preset values of the stiffness and damping for the joints and set it to the inputs
-    public List<float> stiffness; // This is the input for the stiffnesses for each joint to override the preset
-    public List<float> damping; // This is the input for the dampings for each joint to override the preset
+    public List<float> Stiffness; // This is the input for the stiffnesses for each joint to override the preset
+    public List<float> Damping; // This is the input for the dampings for each joint to override the preset
     
     void Start()
     {
@@ -41,7 +41,7 @@ public class Robot_Controller : MonoBehaviour
         _incAngles = new List<float>(_zeroList); // The incremental angles are all zero
         _nextAngles = new List<float>(_zeroList);
         _increments = new List<float>(_zeroList);
-        _enroute = new List<float>(_zeroList); // We aren't enroute anywhere
+        _currentEndGoal = new List<float>(_zeroList); // We aren't enroute anywhere
         _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This converts our degree/second velocity to radians/second
     }
 
@@ -62,9 +62,9 @@ public class Robot_Controller : MonoBehaviour
         }
         Debug.Log("We just added " + _joints.Count + " ArticulationBodies to the joints array");
 
-        if(stiffness.Count != _joints.Count || damping.Count != _joints.Count) // Error message if we don't have correct number of inputs
+        if(Stiffness.Count != _joints.Count || Damping.Count != _joints.Count) // Error message if we don't have correct number of inputs
         {
-            Debug.LogError("Expected " + _joints.Count + " inputs and Got " + stiffness.Count + " and " + damping.Count + " for the stiffness and damping lists.");
+            Debug.LogError("Expected " + _joints.Count + " inputs and Got " + Stiffness.Count + " and " + Damping.Count + " for the stiffness and damping lists.");
         }
 
         if(SetAllJointDriveValues) // We set the Stiffness and Damping values to override the preset if told to do so
@@ -72,8 +72,8 @@ public class Robot_Controller : MonoBehaviour
             for(int i=0; i < _joints.Count ; i++) // Runs through all the joints to set each value to the xDrive for each joint
             {
                 ArticulationDrive drive = _joints[i].xDrive;
-                drive.stiffness = stiffness[i];
-                drive.damping = damping[i];
+                drive.stiffness = Stiffness[i];
+                drive.damping = Damping[i];
                 _joints[i].xDrive = drive;
             }
         }
@@ -109,21 +109,21 @@ public class Robot_Controller : MonoBehaviour
             return;
         }
 
-        if(!(SamePos(_currentDriveTarget, _enroute))) // If the route has changed, we need to restart the motion
+        if(!(SamePos(_currentDriveTarget, _currentEndGoal))) // If the route has changed, we need to restart the motion
         {
-            _enroute.Clear();
-            _enroute.AddRange(TargetJointAngles);
+            _currentEndGoal.Clear();
+            _currentEndGoal.AddRange(TargetJointAngles);
             _incAngles.Clear();
             _incAngles.AddRange(_zeroList);
         }
 
+        // This if condition initializes the motion
         if(SamePos(_incAngles, _zeroList)) // If we don't have increments for the angles, then we aren't going anywhere and need to initialize these increments
         {
             _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This updates the value of _maxVelRad if the input MaxVelocityDeg is changed during motion
-            GetIncrements(); // This calculates the values for increments given the target angles, the current positions, and the maximum velocity
-            SetIncAngles(); // This calculates the incremental angles given the increments and the target angles
-            _enroute.Clear();
-            _enroute.AddRange(TargetJointAngles); // We set our enroute position as this is where our robot movement will be moving to
+            GetAndSetIncrements(); // This calculates the values for incremental angles given the target angles, the current positions, and the maximum velocity
+            _currentEndGoal.Clear();
+            _currentEndGoal.AddRange(TargetJointAngles); // We set our the end goal position of our robot
             _nextAngles = AddLists(_currentDriveTarget, _incAngles); // This increments the angles by one increment
         }
 
@@ -154,7 +154,7 @@ public class Robot_Controller : MonoBehaviour
         }
     }
 
-    public void GetIncrements()
+    public void GetAndSetIncrements()
     {
         _increments.Clear();
         for(int i=0 ; i < TargetJointAngles.Count ; i++)
@@ -167,10 +167,6 @@ public class Robot_Controller : MonoBehaviour
             else // Otherwise, we just add the incremental value
                 _increments.Add(newT); 
         }
-    }
-
-    public void SetIncAngles()
-    {
         _incAngles.Clear();
         for(int i=0 ; i<_increments.Count ; i++) // Each incremental angle is the total angle needed to travel divided by the number of increments
         {
