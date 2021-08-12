@@ -38,10 +38,12 @@ public class Robot_Controller : MonoBehaviour
             TargetJointAngles = new List<float>(_zeroList); // Simple initial position
         }
         _currentDriveTarget = new List<float>(_zeroList); // This is the current position at the Start
-        _incAngles = new List<float>(_zeroList); // The incremental angles are all zero
-        _nextAngles = new List<float>(_zeroList);
-        _increments = new List<float>(_zeroList);
-        _currentEndGoal = new List<float>(_zeroList); // We aren't enroute anywhere
+        UpdateCurrentDriveTargetAndJointAngles();
+
+        _incAngles = new List<float>(_currentDriveTarget); // The incremental angles are all zero
+        _nextAngles = new List<float>(_currentDriveTarget);
+        _increments = new List<float>(_currentDriveTarget);
+        _currentEndGoal = new List<float>(_currentDriveTarget); // We aren't enroute anywhere
         _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This converts our degree/second velocity to radians/second
     }
 
@@ -104,26 +106,18 @@ public class Robot_Controller : MonoBehaviour
     {
         UpdateCurrentDriveTargetAndJointAngles(); // We need to update the current position of the Robot to ensure we know exactly where it is
         
-        if(SamePos(CurrentJointAngles, TargetJointAngles)) // If we are at the preset target, FixedUpdate shouldn't run so we return nothing
+        if(SamePos(_currentDriveTarget, TargetJointAngles)) // If we are at the preset target, FixedUpdate shouldn't run so we return nothing
         {
+            Debug.Log("Reached the target yay!");
             return;
         }
-
-        if(!(SamePos(_currentDriveTarget, _currentEndGoal))) // If the route has changed, we need to restart the motion
+        
+        if(!(SamePos(TargetJointAngles, _currentEndGoal))) // This initializes the motion
         {
             _currentEndGoal.Clear();
-            _currentEndGoal.AddRange(TargetJointAngles);
-            _incAngles.Clear();
-            _incAngles.AddRange(_zeroList);
-        }
-
-        // This if condition initializes the motion
-        if(SamePos(_incAngles, _zeroList)) // If we don't have increments for the angles, then we aren't going anywhere and need to initialize these increments
-        {
-            _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This updates the value of _maxVelRad if the input MaxVelocityDeg is changed during motion
+            _currentEndGoal.AddRange(TargetJointAngles); // We update the value of the Current End Goal
+            _maxVelRad = MaxVelocityDeg * Mathf.Deg2Rad; // This updates the value of _maxVelRad if the input MaxVelocityDeg is changed after initialization
             GetAndSetIncrements(); // This calculates the values for incremental angles given the target angles, the current positions, and the maximum velocity
-            _currentEndGoal.Clear();
-            _currentEndGoal.AddRange(TargetJointAngles); // We set our the end goal position of our robot
             _nextAngles = AddLists(_currentDriveTarget, _incAngles); // This increments the angles by one increment
         }
 
@@ -135,6 +129,14 @@ public class Robot_Controller : MonoBehaviour
         }
         else // Otherwise, the robot is incrementing the angles to the next incremental position
         {
+            List<bool> anglesReached = SameAngles(_nextAngles, TargetJointAngles); // We check to see if some of the angles have already arrived
+            for(int i=0; i < anglesReached.Count; i++) // The angles that have arrived at the target does not need anymore incrementing after this
+            {
+                if(anglesReached[i])
+                {
+                    _incAngles[i] = 0;
+                }
+            }
             AdjustRobotAngles(_nextAngles, _maxVelRad); // We adjust the robot to the next position
             _nextAngles = AddLists(_nextAngles, _incAngles); // We increment the nextAngle list up by the incremental angles
         }
@@ -162,15 +164,19 @@ public class Robot_Controller : MonoBehaviour
             float diff = Math.Abs(TargetJointAngles[i] - _currentDriveTarget[i]); // We get the magnitude of the angle needed to move
             float t = diff/_maxVelRad; // The time taken is the angle divided by the angular velocity
             int newT = (int)t; // Each increment is dependent on the time step
-            if (newT == 0) // If the time step is zero, this means that there is no split for the angle so we simlpy have an increment of 1
-                _increments.Add(1);
-            else // Otherwise, we just add the incremental value
-                _increments.Add(newT); 
+            _increments.Add(newT);
         }
         _incAngles.Clear();
         for(int i=0 ; i<_increments.Count ; i++) // Each incremental angle is the total angle needed to travel divided by the number of increments
         {
-            _incAngles.Add((TargetJointAngles[i] - _currentDriveTarget[i])/_increments[i]);
+            if(_increments[i] != 0)
+            {
+                _incAngles.Add((TargetJointAngles[i] - _currentDriveTarget[i])/_increments[i]);
+            }              
+            else
+            {
+                _incAngles.Add(0);
+            }
         }
     }
 
@@ -193,6 +199,7 @@ public class Robot_Controller : MonoBehaviour
     {
         if(pos1.Count != pos2.Count)
         {
+            Debug.LogError("The input positions have incompatible lengths");
             return false;
         }
         for(int i = 0; i < pos1.Count; i++)
@@ -203,6 +210,28 @@ public class Robot_Controller : MonoBehaviour
             }
         }
         return true; // After checking all, if none returns false, then we are within range and we return true
+    }
+
+    public List<bool> SameAngles(List<float> pos1, List<float> pos2) // This function runs through each element in the lists and check to see if each is within range of each other
+    {
+        List<bool> temp = new List<bool>();
+        if(pos1.Count != pos2.Count)
+        {
+            Debug.LogError("The input positions have incompatible lengths");
+            return temp;
+        }
+        for(int i = 0; i < pos1.Count; i++)
+        {
+            if(Math.Abs(pos1[i] - pos2[i]) > AngleSensitivityDeg) // if any angle isn't within 'AngleSensitivityDeg' range of each other, then it is false
+            {
+                temp.Add(false);
+            }
+            else
+            {
+                temp.Add(true);
+            }
+        }
+        return temp;
     }
 
     public void AdjustRobotAngles(List<float> angles, float vel) // This simply adjusts the robot angles to the values in the angles input list and sets the velocity to vel

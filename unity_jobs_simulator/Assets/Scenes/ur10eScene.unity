@@ -480,6 +480,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1646092672}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
+      propertyPath: MaxVelocityDeg
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: CheckAngleError
       value: 1
       objectReference: {fileID: 0}
@@ -501,7 +505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: AngleSensitivityDeg
-      value: 1
+      value: 0.88
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.size
@@ -517,27 +521,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[0]
-      value: 1e+10
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[1]
-      value: 1e+10
+      value: 100000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[2]
-      value: 1e+10
+      value: 100000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[3]
-      value: 1e+10
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[4]
-      value: 1e+10
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Damping.Array.data[5]
-      value: 1e+10
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: damping.Array.data[0]
@@ -565,27 +569,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[0]
-      value: 1e+10
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[1]
-      value: 1e+20
+      value: 1000000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[2]
-      value: 1e+20
+      value: 1000000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[3]
-      value: 1e+20
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[4]
-      value: 1e+10
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: Stiffness.Array.data[5]
-      value: 1e+10
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: stiffness.Array.data[0]
@@ -617,19 +621,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: TargetJointAngles.Array.data[0]
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: TargetJointAngles.Array.data[1]
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: TargetJointAngles.Array.data[2]
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4390069903876128521, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: TargetJointAngles.Array.data[3]
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5037355380368162666, guid: 1f5551b41dfeaac44a845b9ff81aa034, type: 3}
       propertyPath: speed
