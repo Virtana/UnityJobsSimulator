@@ -1,0 +1,3 @@
+[submodule "unity_robot_simulator/Packages/URDF-Importer"]
+	path = unity_robot_simulator/Packages/URDF-Importer
+	url = git@github.com:Unity-Technologies/URDF-Importer.git
